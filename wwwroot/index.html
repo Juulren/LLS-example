@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07070a"><title>PulseDeck · Tu música, nodo a nodo</title><link rel="stylesheet" href="styles.css"><script src="scanner.js" defer></script><script src="app.js" defer></script></head>
+<body>
+<div class="scanner-background" aria-hidden="true"><canvas id="scanner"></canvas></div><div class="background-shade" aria-hidden="true"></div>
+<header class="masthead"><a class="brand" href="/"><span class="brand-icon">◉</span> PulseDeck<span class="brand-dot">.</span></a><span class="subtitle">TU MÚSICA, NODO A NODO</span><span class="session"><i></i> LIVE SESSION <span class="session-number">/ 001</span></span></header>
+<main>
+<div class="intro"><div><span class="eyebrow">ESTRUCTURAS QUE SUENAN</span><h1 aria-label="Tu música. Tu ritmo. Tu momento. Tu universo."><span aria-hidden="true">Tu música.<br>Tu <span class="rotating-text" id="rotating-text"><span class="rotating-word">ritmo.</span></span></span></h1></div><p>Organiza el siguiente beat.<br>Explora lo que pasa entre nodos.</p></div>
+<div class="dashboard">
+<aside class="left-column">
+<section class="panel player border-glow" aria-labelledby="player-title">
+<div class="section-heading"><span class="eyebrow" id="player-title">01 / AHORA SUENA</span><span class="tiny-pill" id="play-status">EN ESPERA</span></div>
+<div class="cd-stage" tabindex="0" aria-label="Carcasa 3D. Arrastra para inclinar o usa las flechas del teclado.">
+ <div class="stage-orbit"></div><div class="jewel-case-3d"><div class="case-back"></div><div class="case-spine"><span>PULSEDECK · LIVE MIX</span></div><div class="case-edge top"></div><div class="case-edge bottom"></div><div class="disc-plane"><div class="cd-disc"><div class="disc-art"></div><div class="iridescence"></div><div class="disc-hub"></div></div></div><div class="case-front"><span class="case-label">PD / DIGITAL AUDIO</span><span class="case-corner">COMPACT<br><b>DISC</b></span></div></div>
+</div>
+<div class="inspect-hint">↔ ARRASTRA PARA EXPLORAR EN 3D</div>
+<div class="now-title"><h2 id="current-title">El escenario está listo</h2><p id="current-artist">Despacha el primer nodo para comenzar</p></div>
+<audio id="audio" crossorigin="anonymous" preload="none"></audio><canvas id="spectrum" height="45" aria-label="Espectro del audio"></canvas>
+<div class="progress"><span id="elapsed">0:00</span><div><i id="progress-fill"></i></div><span id="total-time">0:30</span></div>
+<div class="transport"><button class="play-button border-glow" id="play" aria-label="Reproducir o pausar">▶</button><button class="next-button border-glow" id="next">Siguiente en cola <span>↗</span><small>EliminarInicio · O(1)</small></button></div>
+<p class="audio-note">Previews de iTunes · hasta 30 segundos</p>
+</section>
+</aside>
+<div class="right-column">
+<section class="add-panel" aria-label="Agregar canciones">
+<div class="add-toolbar"><div class="search-box border-glow"><span aria-hidden="true">⌕</span><input id="itunes" aria-label="Encuentra una canción en iTunes" placeholder="Encuentra el siguiente beat en iTunes…" autocomplete="off" aria-controls="itunes-results"></div><button type="button" id="toggle-filters" class="filter-button border-glow" aria-expanded="false" aria-controls="manual-fields"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="currentColor"/><circle cx="15" cy="17" r="3" fill="currentColor"/></svg><span>Filtros</span></button></div>
+<div id="itunes-results" aria-live="polite"></div>
+<form id="track-form">
+<div id="selected-track" class="selected-track" aria-live="polite" hidden></div>
+<div id="manual-fields" class="manual-fields panel border-glow" hidden><div class="section-heading"><span class="eyebrow" id="form-title">O INGRESA LOS DATOS</span><span class="tiny-pill">PROYECTO 1</span></div><p class="manual-hint">Agrega una pista manualmente o ajusta los datos de tu selección.</p>
+<div class="form-grid"><label>Título<input name="titulo" required maxlength="200" placeholder="Nombre de la canción"></label><label>Artista<input name="artista" required maxlength="200" placeholder="Nombre del artista"></label><label>Duración (seg)<input name="duracionSegundos" type="number" min="1" max="86400" value="180" required></label><label>BPM<input name="bpm" type="number" min="1" max="999" value="120" required></label><label>Prioridad (1–5)<input name="prioridad" type="number" min="1" max="5" value="3" required></label><label class="full">URL de portada <span>(opcional)</span><input name="thumbnailUrl" type="url" placeholder="https://…"></label><label class="full">URL del preview <span>(opcional)</span><input name="audioPreviewUrl" type="url" placeholder="https://…"></label></div></div>
+<div class="insert-actions" id="insert-actions" hidden><button class="border-glow accent" type="submit" data-destino="inicio">+ Inicio <small>O(1)</small></button><button class="border-glow" type="submit" data-destino="final">+ Final <small>O(n)</small></button><button class="border-glow" type="submit" data-destino="posicion">+ Posición <small>O(n)</small></button><label class="position-field">k<input name="posicion" aria-label="Posición k" type="number" min="0" value="0" required></label><button class="border-glow clear-selection" type="button" id="clear-selection" aria-label="Descartar selección">×</button></div><div id="edit-actions" hidden><button class="border-glow accent" type="submit">Guardar cambios</button><button class="border-glow" type="button" id="cancel-edit">Cancelar</button></div></form>
+</section>
+<section class="panel queue-panel border-glow" aria-labelledby="queue-title"><div class="queue-heading"><div><span class="eyebrow">03 / SIGUE EL FLUJO</span><h2 id="queue-title">Tu cola activa <span id="count">00</span></h2></div><span class="tiny-pill">LISTA LIGADA SIMPLE</span></div>
+<div class="algorithm-tools"><div class="section-heading"><span class="field-label">EXPLORA LOS NODOS</span><span class="project-tag">PROYECTO 2</span></div><label class="search-box"><span>⌕</span><input id="queue-search" placeholder="Búsqueda secuencial por título o artista…" aria-label="Buscar en la cola"></label><p id="search-info" class="search-info" aria-live="polite">Empieza en Cabeza. Sigue cada .Siguiente.</p><div class="sort-row"><span>MERGE SORT</span><button class="border-glow sort" data-criterio="bpm">BPM</button><button class="border-glow sort" data-criterio="duracion">Duración</button><button class="border-glow sort" data-criterio="prioridad">Prioridad</button><button class="border-glow" id="direction" aria-label="Cambiar dirección de ordenamiento">↑ Asc.</button><button class="border-glow" id="reverse">⇄ Invertir</button></div></div>
+<p class="reorder-hint">Arrastra el asa ⠿ de una canción para cambiar su lugar en la cola.</p><div class="list-header"><span>PISTA / NODO</span><span>BPM · PRIORIDAD</span></div><div id="queue" class="queue" aria-live="polite"></div>
+<div class="queue-footer"><span><i></i> <span id="queue-summary">Conectando con C#…</span></span><button class="border-glow" id="remove-last">Quitar último <small>O(n)</small></button></div><div class="node-explainer"><span class="mini-node">Dato</span><span class="pointer-line">.Siguiente →</span><span class="mini-node">Dato</span><span class="pointer-line">→</span><span class="null-label">NULL</span><p>Cada canción es un nodo.<br>Cada enlace, lo que viene después.</p></div>
+</section></div></div>
+<footer class="telemetry border-glow"><span class="terminal-icon">⌘</span><span class="eyebrow">PUNTEROS EN VIVO</span><code id="telemetry">Conectando…</code><span class="runtime">C# / .NET 8</span></footer>
+<div class="bottom-line"><span>HECHO DE MÚSICA Y REFERENCIAS.</span><span>POO · SOLID · MVC</span></div>
+</main><div id="notice" role="status" aria-live="polite" hidden></div>
+</body></html>
